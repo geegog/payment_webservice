@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.luminor</groupId>
-    <artifactId>payment</artifactId>
+    <artifactId>webservice</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>payment</name>
     <description>Demo project for Spring Boot</description>

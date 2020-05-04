@@ -1,4 +1,4 @@
-package com.luminor.payment;
+package com.luminor.webservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
