@@ -17,7 +17,7 @@ import java.util.Currency;
 public
 class MoneyDTO {
 
-    @Column(precision = 8, scale = 2)
+    @Column(precision = 12, scale = 2)
     BigDecimal amount;
 
     Currency currency;

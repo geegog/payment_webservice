@@ -1,5 +1,5 @@
 # payment
-A demonstration of web service architecture by few payment services.
+A demonstration of web service architecture by creating a few payment services.
 
 # How to run the application
 

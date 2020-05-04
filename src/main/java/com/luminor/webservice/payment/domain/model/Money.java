@@ -17,7 +17,7 @@ import java.util.Currency;
 @AllArgsConstructor(staticName = "of")
 public class Money {
 
-    @Column(precision = 8, scale = 2)
+    @Column(precision = 12, scale = 2)
     @NotNull
     BigDecimal amount;
 
