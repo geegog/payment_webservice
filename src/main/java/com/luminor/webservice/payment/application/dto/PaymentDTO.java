@@ -2,6 +2,7 @@ package com.luminor.webservice.payment.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.luminor.webservice.common.application.dto.CancellationMoneyDTO;
 import com.luminor.webservice.common.application.dto.MoneyDTO;
 import lombok.Data;
 import org.springframework.hateoas.RepresentationModel;
@@ -30,7 +31,7 @@ public class PaymentDTO extends RepresentationModel<PaymentDTO> {
 
     private String status;
 
-    private BigDecimal cancellationFee;
+    private CancellationMoneyDTO cancellationFee;
 
     private String details;
 

@@ -1,5 +1,6 @@
 package com.luminor.webservice.payment.application.service;
 
+import com.luminor.webservice.common.application.dto.CancellationMoneyDTO;
 import com.luminor.webservice.common.application.dto.MoneyDTO;
 import com.luminor.webservice.payment.application.dto.PaymentDTO;
 import com.luminor.webservice.payment.domain.model.Payment;
@@ -26,7 +27,10 @@ public class PaymentAssembler extends RepresentationModelAssemblerSupport<Paymen
         dto.setCreated(payment.getCreated());
         dto.setUpdated(payment.getUpdated());
         dto.setBICCode(payment.getBICCode());
-        dto.setCancellationFee(payment.getCancellationFee());
+        if (payment.getCancellationFee() != null) {
+            CancellationMoneyDTO cancellation = CancellationMoneyDTO.of(payment.getCancellationFee().getFee(), payment.getCancellationFee().getCancellationCurrency());
+            dto.setCancellationFee(cancellation);
+        }
         dto.setCreditorIBAN(payment.getCreditorIBAN());
         dto.setDebtorIBAN(payment.getDebtorIBAN());
         dto.setDetails(payment.getDetails());

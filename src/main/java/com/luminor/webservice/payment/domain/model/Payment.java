@@ -26,8 +26,8 @@ public class Payment extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    @Column(precision = 8, scale = 2)
-    private BigDecimal cancellationFee;
+    @Embedded
+    private CancellationMoney cancellationFee;
 
     private String details;
 

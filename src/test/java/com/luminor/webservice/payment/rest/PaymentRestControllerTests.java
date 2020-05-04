@@ -45,8 +45,8 @@ public class PaymentRestControllerTests {
     public void testCreatePayment() throws Exception {
         String paymentDTO = "{\n" +
                 "\t\"type\": \"TYPE3\",\n" +
-                "\t\"creditorIBAN\": \"EE782200221070069410\",\n" +
-                "\t\"debtorIBAN\": \"EE782200221070069410\",\n" +
+                "\t\"creditorIBAN\": \"BBBBBBBBBBBBBBBBBBBBB\",\n" +
+                "\t\"debtorIBAN\": \"XXXXXXXXXXXXXXXXXXXXXX\",\n" +
                 "\t\"BICCode\": \"24564275\",\n" +
                 "\t\"money\": {\n" +
                 "\t\t\"amount\": 500.00,\n" +
@@ -75,8 +75,8 @@ public class PaymentRestControllerTests {
     public void testCancelPayment() throws Exception {
         String paymentDTO = "{\n" +
                 "\t\"type\": \"TYPE3\",\n" +
-                "\t\"creditorIBAN\": \"EE782200221070069410\",\n" +
-                "\t\"debtorIBAN\": \"EE782200221070069410\",\n" +
+                "\t\"creditorIBAN\": \"XXXXXXXXXXXXXXXXXXXX\",\n" +
+                "\t\"debtorIBAN\": \"YYYYYYYYYYYYYYYYYYYY\",\n" +
                 "\t\"BICCode\": \"24564275\",\n" +
                 "\t\"money\": {\n" +
                 "\t\t\"amount\": 500.00,\n" +

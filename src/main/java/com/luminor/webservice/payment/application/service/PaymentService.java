@@ -7,10 +7,7 @@ import com.luminor.webservice.common.application.exception.PaymentNotFoundExcept
 import com.luminor.webservice.payment.application.dto.PaymentDTO;
 import com.luminor.webservice.payment.application.dto.PaymentIdAndFeeDTO;
 import com.luminor.webservice.payment.application.dto.PaymentIdsDTO;
-import com.luminor.webservice.payment.domain.model.Money;
-import com.luminor.webservice.payment.domain.model.Payment;
-import com.luminor.webservice.payment.domain.model.Status;
-import com.luminor.webservice.payment.domain.model.Type;
+import com.luminor.webservice.payment.domain.model.*;
 import com.luminor.webservice.payment.domain.repository.PaymentRepository;
 import com.luminor.webservice.payment.infrastructure.http.service.IpService;
 import lombok.extern.slf4j.Slf4j;
@@ -158,8 +155,9 @@ public class PaymentService {
             throw new CannotCancelException();
         }
 
-        payment.setCancellationFee(calculateCancellationFee(payment.getCreated(), payment.getType()));
+        payment.setCancellationFee(CancellationMoney.of(calculateCancellationFee(payment.getCreated(), payment.getType()), Currency.getInstance(EURO_CODE)));
         payment.setStatus(Status.CANCELLED);
+        payment.setUpdated(LocalDateTime.now());
         paymentRepository.save(payment);
 
         log.info("Payment cancelled: {} ip: {}", payment, ipService.ip());

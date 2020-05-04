@@ -1,6 +1,9 @@
 package com.luminor.webservice.payment.application.service;
 
+import com.luminor.webservice.common.application.dto.CancellationMoneyDTO;
+import com.luminor.webservice.common.application.dto.MoneyDTO;
 import com.luminor.webservice.payment.application.dto.PaymentIdAndFeeDTO;
+import com.luminor.webservice.payment.domain.model.CancellationMoney;
 import com.luminor.webservice.payment.domain.model.Payment;
 import com.luminor.webservice.payment.rest.PaymentRestController;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -21,7 +24,10 @@ public class PaymentIdAndFeeAssembler extends RepresentationModelAssemblerSuppor
     public PaymentIdAndFeeDTO toModel(Payment payment) {
         PaymentIdAndFeeDTO dto = instantiateModel(payment);
         dto.setId(payment.getId());
-        dto.setCancellationFee(payment.getCancellationFee());
+        if (payment.getCancellationFee() != null) {
+            CancellationMoneyDTO cancellation = CancellationMoneyDTO.of(payment.getCancellationFee().getFee(), payment.getCancellationFee().getCancellationCurrency());
+            dto.setCancellationFee(cancellation);
+        }
 
         dto.add(linkTo(methodOn(PaymentRestController.class)
                 .cancelPayment(dto.getId().toString())).withRel("cancel").withType(HttpMethod.PATCH.toString()));
