@@ -53,7 +53,6 @@ public class PaymentService {
 
     private Payment savePayment(String creatorIBAN, String debtorIBAN, String BICCode, String details, Money money, Type type) {
         Payment payment = new Payment();
-        payment.setId(UUID.randomUUID());
         payment.setBICCode(BICCode);
         payment.setCreditorIBAN(creatorIBAN);
         payment.setDebtorIBAN(debtorIBAN);
