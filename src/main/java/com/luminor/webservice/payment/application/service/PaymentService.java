@@ -1,9 +1,6 @@
 package com.luminor.webservice.payment.application.service;
 
-import com.luminor.webservice.common.application.exception.AlreadyCancelledException;
-import com.luminor.webservice.common.application.exception.BadRequestException;
-import com.luminor.webservice.common.application.exception.CannotCancelException;
-import com.luminor.webservice.common.application.exception.PaymentNotFoundException;
+import com.luminor.webservice.common.application.exception.*;
 import com.luminor.webservice.payment.application.dto.PaymentDTO;
 import com.luminor.webservice.payment.application.dto.PaymentIdAndFeeDTO;
 import com.luminor.webservice.payment.application.dto.PaymentIdsDTO;
@@ -65,60 +62,65 @@ public class PaymentService {
     }
 
     @Transactional
-    public PaymentDTO createType1(PaymentDTO paymentDTO) throws BadRequestException {
+    public PaymentDTO create(PaymentDTO paymentDTO, String type) throws BadRequestException, InvalidTypeException {
 
-        if (!paymentDTO.getType().equals(Type.TYPE1.name()) || paymentDTO.getCreditorIBAN() == null || paymentDTO.getDebtorIBAN() == null
-                || paymentDTO.getDetails() == null || paymentDTO.getMoney() == null || (paymentDTO.getMoney() != null
-                && paymentDTO.getMoney().getCurrency() != Currency.getInstance(EURO_CODE))) {
-            String error = errorString(paymentDTO, Type.TYPE1);
-            log.error("Payment error: {} Request Object: {} ip: {}", error, paymentDTO, ipService.ip());
-            throw new BadRequestException(error);
+        if (!paymentDTO.getType().equals(type)) {
+            throw new InvalidTypeException(type, paymentDTO.getType());
         }
 
-        Payment payment = savePayment(paymentDTO.getCreditorIBAN(), paymentDTO.getDebtorIBAN(), null,
-                paymentDTO.getDetails(), Money.of(paymentDTO.getMoney().getAmount(), paymentDTO.getMoney().getCurrency()), Type.TYPE1);
+        if (Type.TYPE1 == Type.valueOf(type)) {
 
-        log.info("New Payment Created: {} ip: {}", payment, ipService.ip());
+            if (!paymentDTO.getType().equals(Type.TYPE1.name()) || paymentDTO.getCreditorIBAN() == null || paymentDTO.getDebtorIBAN() == null
+                    || paymentDTO.getDetails() == null || paymentDTO.getMoney() == null || (paymentDTO.getMoney() != null
+                    && paymentDTO.getMoney().getCurrency() != Currency.getInstance(EURO_CODE))) {
+                String error = errorString(paymentDTO, Type.TYPE1);
+                log.error("Payment error: {} Request Object: {} ip: {}", error, paymentDTO, ipService.ip());
+                throw new BadRequestException(error);
+            }
 
-        return paymentAssembler.toModel(payment);
-    }
+            Payment payment = savePayment(paymentDTO.getCreditorIBAN(), paymentDTO.getDebtorIBAN(), null,
+                    paymentDTO.getDetails(), Money.of(paymentDTO.getMoney().getAmount(), paymentDTO.getMoney().getCurrency()), Type.TYPE1);
 
-    @Transactional
-    public PaymentDTO createType2(PaymentDTO paymentDTO) throws BadRequestException {
+            log.info("New Payment Created: {} ip: {}", payment, ipService.ip());
 
-        if (!paymentDTO.getType().equals(Type.TYPE2.name()) || paymentDTO.getCreditorIBAN() == null || paymentDTO.getDebtorIBAN() == null
-                || paymentDTO.getMoney() == null || (paymentDTO.getMoney() != null
-                && paymentDTO.getMoney().getCurrency() != Currency.getInstance(US_CODE))) {
-            String error = errorString(paymentDTO, Type.TYPE2);
-            log.error("Payment error: {} Request Object: {} ip: {}", error, paymentDTO, ipService.ip());
-            throw new BadRequestException(error);
+            return paymentAssembler.toModel(payment);
+
+        } else if (Type.TYPE2 == Type.valueOf(type)) {
+
+            if (!paymentDTO.getType().equals(Type.TYPE2.name()) || paymentDTO.getCreditorIBAN() == null || paymentDTO.getDebtorIBAN() == null
+                    || paymentDTO.getMoney() == null || (paymentDTO.getMoney() != null
+                    && paymentDTO.getMoney().getCurrency() != Currency.getInstance(US_CODE))) {
+                String error = errorString(paymentDTO, Type.TYPE2);
+                log.error("Payment error: {} Request Object: {} ip: {}", error, paymentDTO, ipService.ip());
+                throw new BadRequestException(error);
+            }
+
+            Payment payment = savePayment(paymentDTO.getCreditorIBAN(), paymentDTO.getDebtorIBAN(), null,
+                    paymentDTO.getDetails(), Money.of(paymentDTO.getMoney().getAmount(), paymentDTO.getMoney().getCurrency()), Type.TYPE2);
+
+            log.info("New Payment Created: {} ip: {}", payment, ipService.ip());
+
+            return paymentAssembler.toModel(payment);
+
+        } else {
+
+            if (!paymentDTO.getType().equals(Type.TYPE3.name()) || paymentDTO.getCreditorIBAN() == null || paymentDTO.getDebtorIBAN() == null
+                    || paymentDTO.getBICCode() == null || paymentDTO.getMoney() == null || (paymentDTO.getMoney() != null
+                    && (!allowedCurrencies.contains(paymentDTO.getMoney().getCurrency().getCurrencyCode())))) {
+                String error = errorString(paymentDTO, Type.TYPE3);
+                log.error("Payment error: {} Request Object: {} ip: {}", error, paymentDTO, ipService.ip());
+                throw new BadRequestException(error);
+            }
+
+            Payment payment = savePayment(paymentDTO.getCreditorIBAN(), paymentDTO.getDebtorIBAN(), paymentDTO.getBICCode(),
+                    paymentDTO.getDetails(), Money.of(paymentDTO.getMoney().getAmount(), paymentDTO.getMoney().getCurrency()), Type.TYPE3);
+
+            log.info("New Payment Created: {} ip: {}", payment, ipService.ip());
+
+            return paymentAssembler.toModel(payment);
+
         }
 
-        Payment payment = savePayment(paymentDTO.getCreditorIBAN(), paymentDTO.getDebtorIBAN(), null,
-                paymentDTO.getDetails(), Money.of(paymentDTO.getMoney().getAmount(), paymentDTO.getMoney().getCurrency()), Type.TYPE2);
-
-        log.info("New Payment Created: {} ip: {}", payment, ipService.ip());
-
-        return paymentAssembler.toModel(payment);
-    }
-
-    @Transactional
-    public PaymentDTO createType3(PaymentDTO paymentDTO) throws BadRequestException {
-
-        if (!paymentDTO.getType().equals(Type.TYPE3.name()) || paymentDTO.getCreditorIBAN() == null || paymentDTO.getDebtorIBAN() == null
-                || paymentDTO.getBICCode() == null || paymentDTO.getMoney() == null || (paymentDTO.getMoney() != null
-                && (!allowedCurrencies.contains(paymentDTO.getMoney().getCurrency().getCurrencyCode())))) {
-            String error = errorString(paymentDTO, Type.TYPE3);
-            log.error("Payment error: {} Request Object: {} ip: {}", error, paymentDTO, ipService.ip());
-            throw new BadRequestException(error);
-        }
-
-        Payment payment = savePayment(paymentDTO.getCreditorIBAN(), paymentDTO.getDebtorIBAN(), paymentDTO.getBICCode(),
-                paymentDTO.getDetails(), Money.of(paymentDTO.getMoney().getAmount(), paymentDTO.getMoney().getCurrency()), Type.TYPE3);
-
-        log.info("New Payment Created: {} ip: {}", payment, ipService.ip());
-
-        return paymentAssembler.toModel(payment);
     }
 
     private Payment getPayment(String id) {

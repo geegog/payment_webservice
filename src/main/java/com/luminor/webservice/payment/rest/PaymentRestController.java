@@ -1,12 +1,8 @@
 package com.luminor.webservice.payment.rest;
 
-import com.luminor.webservice.common.application.exception.AlreadyCancelledException;
-import com.luminor.webservice.common.application.exception.BadRequestException;
-import com.luminor.webservice.common.application.exception.CannotCancelException;
-import com.luminor.webservice.common.application.exception.PaymentNotFoundException;
+import com.luminor.webservice.common.application.exception.*;
 import com.luminor.webservice.payment.application.dto.PaymentDTO;
 import com.luminor.webservice.payment.application.service.PaymentService;
-import com.luminor.webservice.payment.domain.model.Type;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,31 +26,11 @@ public class PaymentRestController {
 
     @PostMapping("/type/{type}/create")
     public ResponseEntity<PaymentDTO> create(@RequestBody PaymentDTO paymentDTO, @PathVariable String type) {
-        if (!paymentService.isValidType(type)) {
+        try {
+            return new ResponseEntity<>(paymentService.create(paymentDTO, type), HttpStatus.CREATED);
+        } catch (BadRequestException | InvalidTypeException e) {
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Unknown Payment Type!");
-        }
-        if (Type.TYPE1 == Type.valueOf(type)) {
-            try {
-                return new ResponseEntity<>(paymentService.createType1(paymentDTO), HttpStatus.CREATED);
-            } catch (BadRequestException e) {
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST, e.getMessage(), e);
-            }
-        } else if (Type.TYPE2 == Type.valueOf(type)) {
-            try {
-                return new ResponseEntity<>(paymentService.createType2(paymentDTO), HttpStatus.CREATED);
-            } catch (BadRequestException e) {
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST, e.getMessage(), e);
-            }
-        } else {
-            try {
-                return new ResponseEntity<>(paymentService.createType3(paymentDTO), HttpStatus.CREATED);
-            } catch (BadRequestException e) {
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST, e.getMessage(), e);
-            }
+                    HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
 
